@@ -1,0 +1,30 @@
+Relatório do Trabalho 1 de Redes 2
+
+Nome: Laion Luis Ferreira
+
+-Implementei dois scripts que monitoram os elaces do backbone. No primeiro script usei ping para verificar se os pop estão online e traceroute 
+para descobrir os links, primeiramente é preciso fazer um traceroute quando não tem enlaces fora do ar, para gravar em arquivos, depois faço o 
+uso do traceroute para comparar com esses arquivos, se tiver alguma coisa de diferente pego os links que estão faltando no segundo traceroute mas
+que estão no primeiro e faço ping para ver se estão fora do ar, se tiver grava em um arquivo log (log_enlaces.log). O problema nesse script é 
+que precisa ter os traceroute padrão a partir da maquina que está testando, e que há links que raramente serão alcançaveis, como por exemplo o
+link df-jr, que do paraná esse link não é alcançavel, pois para saber que ele existe, se quisermos fazer traceroute para df, os links sp-mg,
+sp-ce, pr-ms e talvez mais alguns precisam estar offline. Como Christian mencionou em algum dos emails "Uma vez que o algoritmo de roteamento escolheu o melhor caminho, ele vai sempre* usar esse caminho até que esse caminho não seja mais o melhor (por exemplo, caiu algum enlace). Deixar sua aplicação monitorando essas situações pode te dar informações interessantes", tentei fazer esse script com base no que ele falou.
+
+-Fazendo esses testes com traceroute percebi que todos os links tem um ip padrão, que é 200.143.252.* ou 200.143.253.*, sabendo disso fiz o 
+segundo scrip só usando ping, que verifica se todos os ips que consegui achar estão online ou não. Nesse script não precisa de arquivos prontos,
+como no primeiro, e é relativamente mais rapido. Único problema é que não consegui achar o ip do link AM-PA, talvez ele esteja entre as faixas 
+de ip que falei, mas estão sem o nome, ai o comando host que usei para pegar o nome não vai pegar o nome para esse link.
+-Deixei os dois scrips executando no servidor do ding usando ssh (para o primeiro script usar macalan para não precisar pegar as rotas padrão 
+novamente). Nos dois scripts, depois de 24 hrs pegou as mesmas quedas mostradas no paronama (https://www.rnp.br/servicos/conectividade/trafego)
+menos dos links que não são alvançaveis no primeiro script e no segundo script o link AM-PA que não consegui achar o ip. 
+
+-Para descobrir os ips associados as interfaces de cada enlace, usei o traceroute e o lg da rnp. Primeiramente fiquei fazendo varios testes 
+usando traceroute e ping para os sites dos pops(www.pop-*.rnp.br). Assim descobria alem dos ip dos pops os ips dos links entre os roteadores
+(como ro-mt-oi.bkb.rnp.br), e com um script usando ping e host consegui varias informações interessantes como que os ips dos links são 
+200.143.252.{1..255} ou 200.143.253.{1..255} ou 200.143.254.{1..255} e tbm 200.143.255.{1..255} aparece varios nomes com jsp.bkb.rnp.br ou 
+mxpr.bkb.rnp.br. Para o rj Cristian falou que podia usar uma instituição ligada ao bkb, e usei a feparj, que passa pelo link rederio-rj.
+
+-Usando traceroute não é possivel descobrir todos os ips pois há links que não são alcançaveis. Mas usando ping foi possivel descobrir 
+muitos ips, mas não todos como ja expliquei.
+
+-Questão extra (como funciona o traceroute) : é baseado no uso do campo Time to Live (TTL) do pacote IPv4 destinado a limitar o tempo de vida dele. Este valor é decrementado a cada vez que o pacote é encaminhado por um roteador. Ao atingir o valor zero o pacote é descartado e o originador é alertado por uma mensagem ICMP TIME_EXCEEDED. Através da manipulação do campo TTL de uma série de datagramas UDP é possível receber esta mensagem de cada um dos roteadores no caminho do pacote.
